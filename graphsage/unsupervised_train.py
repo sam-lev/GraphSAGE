@@ -30,8 +30,10 @@ flags.DEFINE_float('learning_rate', 0.00001, 'initial learning rate.')
 flags.DEFINE_string("model_size", "small", "Can be big or small; model specific def'ns")
 flags.DEFINE_string('train_prefix', '', 'name of the object file that stores the training data. must be specified.')
 
+flags.DEFINE_string('model_name', '', 'name of the embedded graph model file is created.')
+
 # left to default values in main experiments 
-flags.DEFINE_integer('epochs', 1, 'number of epochs to train.')
+flags.DEFINE_integer('epochs', 100, 'number of epochs to train.')
 flags.DEFINE_float('dropout', 0.0, 'dropout rate (1 - keep probability).')
 flags.DEFINE_float('weight_decay', 0.0, 'weight for l2 loss on embedding matrix.')
 flags.DEFINE_integer('max_degree', 100, 'maximum node degree.')
@@ -47,7 +49,7 @@ flags.DEFINE_integer('identity_dim', 0, 'Set to positive value to use identity e
 
 #logging, saving, validation settings etc.
 flags.DEFINE_boolean('save_embeddings', True, 'whether to save embeddings for all nodes after training')
-flags.DEFINE_string('base_log_dir', '.', 'base directory for logging and saving embeddings')
+flags.DEFINE_string('base_log_dir', './log-dir', 'base directory for logging and saving embeddings')
 flags.DEFINE_integer('validate_iter', 5000, "how often to run a validation minibatch.")
 flags.DEFINE_integer('validate_batch_size', 256, "how many nodes per validation sample.")
 flags.DEFINE_integer('gpu', 1, "which gpu to use.")
@@ -59,7 +61,7 @@ os.environ["CUDA_VISIBLE_DEVICES"]=str(FLAGS.gpu)
 GPU_MEM_FRACTION = 0.8
 
 def log_dir():
-    log_dir = FLAGS.base_log_dir + "/unsup-" + FLAGS.train_prefix.split("/")[-2]
+    log_dir = FLAGS.base_log_dir + "/" + FLAGS.model_name+"-unsup-" + FLAGS.train_prefix.split("/")[-2]
     log_dir += "/{model:s}_{model_size:s}_{lr:0.6f}/".format(
             model=FLAGS.model,
             model_size=FLAGS.model_size,

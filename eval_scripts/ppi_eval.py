@@ -1,6 +1,7 @@
 from __future__ import print_function
 import json
 import numpy as np
+import os
 
 from networkx.readwrite import json_graph
 from argparse import ArgumentParser
@@ -10,6 +11,11 @@ Run this script after running unsupervised training.
 Baseline of using features-only can be run by setting data_dir as 'feat'
 Example:
   python eval_scripts/ppi_eval.py ../data/ppi unsup-ppi/n2v_big_0.000010 test
+python  eval_scripts/ppi_eval.py (dataset_dir) ../example_data (embed_dir) ../unsup-example_data/graphsage_mean_small_0.000010 (setting) test
+
+python  eval_scripts/ppi_eval.py (dataset_dir) ../json_graphs (embed_dir) ..//Users/multivax/Documents/PhD/Research/topologicalComputing-Pascucci/TopoML/graphSage/GraphSAGE/unsup-json_graphs/graphsage_mean_small_0.000010 (setting) test
+
+python  eval_scripts/ppi_eval.py ../json_graphs /Users/multivax/Documents/PhD/Research/topologicalComputing-Pascucci/TopoML/graphSage/GraphSAGE/unsup-json_graphs/graphsage_mean_small_0.000010 test
 '''
 
 def run_regression(train_embeds, train_labels, test_embeds, test_labels):
@@ -23,11 +29,14 @@ def run_regression(train_embeds, train_labels, test_embeds, test_labels):
     log = MultiOutputClassifier(SGDClassifier(loss="log"), n_jobs=10)
     log.fit(train_embeds, train_labels)
 
+    print(test_labels)
+    
     f1 = 0
     for i in range(test_labels.shape[1]):
         print("F1 score", f1_score(test_labels[:,i], log.predict(test_embeds)[:,i], average="micro"))
     for i in range(test_labels.shape[1]):
         print("Random baseline F1 score", f1_score(test_labels[:,i], dummy.predict(test_embeds)[:,i], average="micro"))
+    
 
 if __name__ == '__main__':
     parser = ArgumentParser("Run evaluation on PPI data.")
@@ -35,7 +44,7 @@ if __name__ == '__main__':
     parser.add_argument("embed_dir", help="Path to directory containing the learned node embeddings. Set to 'feat' for raw features.")
     parser.add_argument("setting", help="Either val or test.")
     args = parser.parse_args()
-    dataset_dir = args.dataset_dir
+    dataset_dir = os.path.join(os.getcwd(),args.dataset_dir)
     data_dir = args.embed_dir
     setting = args.setting
 
